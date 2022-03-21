@@ -1,0 +1,23 @@
+name: apply
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ap-southeast-1
+  CLUSTER_NAME: beautiful-sheepdog-1647870089
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: isbang/setup-awscli@v0.1.0
+    - uses: azure/setup-kubectl@v2.0
+    - name: Get Cluster Config
+      run: aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME
+    - name: Apply yaml
+      run: kubectl apply -f .  
